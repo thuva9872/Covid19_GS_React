@@ -1,26 +1,21 @@
 import Dashboard from "@material-ui/icons/Dashboard";
 import Person from "@material-ui/icons/Person";
 import DashboardPage from "views/GS/Dashboard";
-import AssignTechOfficers from "views/GS/AssignTechOfficers";
-import Laboratory from "views/GS/Laboratory";
+import Pharmacy from "views/GS/Pharmacy";
+import Grocery from "views/GS/GroceryStore";
 import Persons from "views/GS/Person";
-import GeneratedReports from "views/GS/GeneratedReports";
-import Student from "views/GS/Student";
-import TechnicalOfficer from "views/GS/TechnicalOfficer";
-import AddType from "views/GS/AddEquipmentType";
-import changePass from "views/GS/ChangePass";
-import {Lock,Domain,GroupAdd,AccountCircle,ReportProblem} from '@material-ui/icons';
-import {Add, Password} from '@mui/icons-material';
-import AssessmentIcon from '@mui/icons-material/Assessment';
+import Vaccination from "views/GS/VaccinationDetail";
+import CovidStatus from "views/GS/CovidStatus";
+import {Domain,GroupAdd} from '@material-ui/icons';
 
 const dashboardRoutes = [
-  {
-    path: "/dashboard",
-    name: "Dashboard",
-    icon: Dashboard,
-    component: DashboardPage,
-    layout: "/gs",
-  },
+  // {
+  //   path: "/dashboard",
+  //   name: "Dashboard",
+  //   icon: Dashboard,
+  //   component: DashboardPage,
+  //   layout: "/gs",
+  // },
   {
     path: "/person",
     name: "Person",
@@ -29,56 +24,33 @@ const dashboardRoutes = [
     layout: "/gs",
   },
   {
-    path: "/technicalofficer",
-    name: "TechnicalOfficer",
+    path: "/covid19",
+    name: "Covid19 Status",
     icon: Person,
-    component: TechnicalOfficer,
+    component: CovidStatus,
     layout: "/gs",
   },
   {
-    path: "/student",
-    name: "Student",
+    path: "/vaccination",
+    name: "Vaccination Detail",
     icon: Person,
-    component: Student,
+    component: Vaccination,
     layout: "/gs",
   },
   {
-    path: "/aasignTechOfficers",
-    name: "AssignTechOfficers",
+    path: "/pharmacy",
+    name: "Pharmacy",
     icon:GroupAdd,
-    component: AssignTechOfficers,
+    component: Pharmacy,
     layout: "/gs",
   },
-  {
-    path: "/laboratories",
-    name: "Laboratories",
-    icon: Domain,
-    component: Laboratory,
-    layout: "/gs",
-  },
-  {
-    path: "/addEquipmentType",
-    name: "Add EquipmentType",
-    icon: Add,
-    component: AddType,
-    layout: "/gs",
-  },
- 
-  {
-    path: "/generatedReport",
-    name: "Report Summary",
-    icon: AssessmentIcon,
-    component: GeneratedReports,
-    layout: "/gs",
-  },
-
-  {
-    path: "/changePass",
-    name: "Change Password",
-    icon: Password,
-    component: changePass,
-    layout: "/gs",
-  }
+  // {
+  //   path: "/grocery",
+  //   name: "Grocery Store",
+  //   icon: Domain,
+  //   component: Grocery,
+  //   layout: "/gs",
+  // }
 ];
 
 export default dashboardRoutes;

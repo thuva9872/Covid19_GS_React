@@ -9,104 +9,93 @@ import { useEffect, useState } from "react";
 import { Container } from "@material-ui/core";
 import Stack from "@mui/material/Stack";
 import { Typography } from "@material-ui/core";
-
+import axios from "axios";
+import useToken from "useToken";
+import { Label } from "@material-ui/icons";
+import GridItem from "components/Grid/GridItem.js";
+import GridContainer from "components/Grid/GridContainer.js";
+import CustomInput from "components/CustomInput/CustomInput.js";
+import Card from "components/Card/Card.js";
+import CardHeader from "components/Card/CardHeader.js";
+import CardAvatar from "components/Card/CardAvatar.js";
+import CardBody from "components/Card/CardBody.js";
+import CardFooter from "components/Card/CardFooter.js";
 const useStyles = makeStyles((theme) => ({
   paper: {
     position: "relative",
-    width: 200,
+    width: "100%",
     borderRadius: "5px",
     // height: "100px",
     backgroundColor: "white",
-    border: "2px solid blue",
+    borderRight: "2px solid blue",
+    borderLeft: "2px solid blue",
+    borderBottom: "2px solid blue",
     //boxShadow: theme.shadows[1],
     padding: theme.spacing(6, 4, 3),
   },
   form: {
     position: "relative",
-    width: "60%",
+    width: "100%",
     borderRadius: "5px",
     // height: "100px",
     backgroundColor: "white",
     border: "2px solid blue",
+    // borderRight: "2px solid blue",
+    // borderLeft: "2px solid blue",
+
     //boxShadow: theme.shadows[1],
     padding: theme.spacing(3, 4, 3),
   },
 }));
 
 export default function Person() {
-  const [open, setOpen] = useState(false);
 
   const classes = useStyles();
-  const onOpenModal = () => {
-    setOpen(true);
-  };
 
-  const onCloseModal = () => {
-    setOpen(false);
-  };
-
-  const fetchData = () => {
-    fetch(process.env.REACT_APP_API + "/admin/viewUsers/lecturer", {
-      credentials: "include",
-    })
-      .then((response) => response.json())
-      .then((data) => setData(data.msg))
-      .catch((e) => console.log(e));
-  };
-  const [data, setData] = useState();
-  useEffect(() => {
-    fetchData();
-  }, []);
-  console.log(data);
-
-  var rows = [];
-  if (data) {
-    for (let i = 0; i < data.length; i++) {
-      rows[i] = {
-        id: i,
-        ID: i + 1,
-        LecturerID: data[i].user_id,
-        firstName: data[i].first_name,
-        lastName: data[i].last_name,
-        Email: data[i].email,
-        ContactNo: data[i].contact_no,
-      };
-    }
-  }
-
-  async function addLecturerHandler() {
-    const requestOptions = {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      credentials: "include",
-      body: JSON.stringify({
-        email: email,
-        userType: "lecturer",
-        firstName: firstName,
-        lastName: lastName,
-        userId: userId,
-        contactNo: contactNo,
-      }),
-    };
-    // console.log(requestOptions);
-    await fetch(process.env.REACT_APP_API + "/admin/addStaff", requestOptions)
-      .then((response) => response.json())
-      .then((data) => {
-        onCloseModal();
-        alert(data.message);
+  async function addPersonHandler() {
+    axios
+      .post(process.env.REACT_APP_API + "/gs/addPerson", {
+        nic,
+        name,
+        address,
+        familyId,
+        dateOfBirth,
+        job,
+        jobLocation
+      }, { headers: { 'Authorization': "Bearer " + token } })
+      .then((response) => {
+        if (response.status === 200) {
+          alert(response.data.message);
+          setCurrentWindow("menu")
+        }
       })
-      .catch((e) => setResponse("Failed"));
-
-    fetchData();
+      .catch(e => alert("Invalid data"));
   }
-  console.log(response);
-  const [response, setResponse] = useState();
-  const [userId, setUserId] = useState();
-  const [firstName, setFirstName] = useState();
-  const [lastName, setLastName] = useState();
-  const [email, setEmail] = useState();
-  const [contactNo, setContactNo] = useState();
 
+  async function getPersonDetailHandler() {
+    axios.get(process.env.REACT_APP_API + "/gs/person/" + findNic, { headers: { 'Authorization': "Bearer " + token } }).then((response) => {
+      if (response.status === 200) {
+        setPersonDetail(response.data)
+      }
+      else {
+        alert("Person not found")
+      }
+    }).catch(e => alert(e))
+  }
+  const { token, setToken } = useToken();
+  const [nic, setNic] = useState();
+  const [name, setName] = useState();
+  const [address, setAddress] = useState();
+  const [familyId, setFamilyId] = useState();
+  const [dateOfBirth, setDateOfBirth] = useState();
+  const [job, setJob] = useState();
+  const [jobLocation, setJobLocation] = useState();
+  const [findNic, setFindNic] = useState();
+  const [personDetail, setPersonDetail] = useState({});
+  const [currentWindow, setCurrentWindow] = useState("menu");
+  console.log(currentWindow)
+  console.log(personDetail);
+  const [data, setData] = useState()
   const menu = (
     <div>
       <br /> <br /> <br />
@@ -117,9 +106,23 @@ export default function Person() {
           spacing={2}
           justifyContent="center"
         >
-          <Button variant="contained">Add new person</Button>
+          <Button
+            onClick={() => setCurrentWindow("addPerson")}
+            type="submit"
+            style={{ minWidth: "5%" }}
+            variant="contained"
+            color="primary"
+            className={classes.submit}
+          >Add new person</Button>
           <br />
-          <Button variant="outlined">View details of a person</Button>
+          <Button
+            onClick={() => setCurrentWindow("viewPerson")}
+            type="submit"
+            style={{ minWidth: "5%" }}
+            variant="contained"
+            color="primary"
+            className={classes.submit}
+          >View details of a person</Button>
         </Stack>
       </Container>
     </div>
@@ -128,12 +131,12 @@ export default function Person() {
   const addPerson = (
     <div>
       <div style={{ alignItems: "center", justifyContent: "center" }}>
-       {  } <Button
-          //   onSubmit={handleSubmit}
+        { } <Button
+          onClick={() => setCurrentWindow("menu")}
           type="submit"
           style={{ minWidth: "5%" }}
           variant="contained"
-          color="primary"
+          color="green"
           className={classes.submit}
         >
           Back
@@ -154,9 +157,9 @@ export default function Person() {
 
           <Grid>
             <div>
-              <form className={classes.form} noValidate>
+              <form className={classes.form} style={{borderBottom:"2px solid blue"}} noValidate>
                 <Typography component="h1" variant="h5">
-                  Sign Up
+                  Add New Person
                 </Typography>
                 <TextField
                   type="text"
@@ -169,7 +172,7 @@ export default function Person() {
                   name="NIC"
                   autoComplete="National Identity Number"
                   autoFocus
-                  // onChange={(e)=>setNic(e.target.value)}
+                  onChange={(e) => setNic(e.target.value)}
                 />
                 <TextField
                   type="text"
@@ -178,10 +181,10 @@ export default function Person() {
                   required
                   fullWidth
                   id="uname"
-                  label="User Name"
-                  name="username"
-                  autoComplete="user name"
-                  // onChange={(e)=>setUsername(e.target.value)}
+                  label="Full Name"
+                  name="fullNmae"
+                  autoComplete="Full Name"
+                  onChange={(e) => setName(e.target.value)}
                   autoFocus
                 />
                 <TextField
@@ -190,11 +193,11 @@ export default function Person() {
                   margin="normal"
                   required
                   fullWidth
-                  id="password"
-                  label="Password"
-                  name="password"
-                  autoComplete="Password"
-                  // onChange={(e)=>setPassword(e.target.value)}
+                  id="address"
+                  label="Address"
+                  name="address"
+                  autoComplete="Address"
+                  onChange={(e) => setAddress(e.target.value)}
                   autoFocus
                 />
 
@@ -204,21 +207,60 @@ export default function Person() {
                   margin="normal"
                   required
                   fullWidth
-                  id="reeatPassword"
-                  label="Repeat Password"
-                  name="repeatPassword"
-                  autoComplete="Repeat Password"
-                  // onChange={(e)=>setRepeatPassword(e.target.value)}
+                  id="familyId"
+                  label="Family ID"
+                  name="familyId"
+                  autoComplete="Family ID"
+                  onChange={(e) => setFamilyId(e.target.value)}
+                  autoFocus
+                />
+                <TextField
+                  type="text"
+                  variant="outlined"
+                  margin="normal"
+                  required
+                  fullWidth
+                  id="dob"
+                  label="Date of Birth (yyyy-mm-dd)"
+                  name="dob"
+                  autoComplete="yyyy-mm-dd"
+                  onChange={(e) => setDateOfBirth(e.target.value)}
+                  autoFocus
+                />
+                <TextField
+                  type="text"
+                  variant="outlined"
+                  margin="normal"
+                  required
+                  fullWidth
+                  id="job"
+                  label="Job"
+                  name="job"
+                  autoComplete="Job"
+                  onChange={(e) => setJob(e.target.value)}
+                  autoFocus
+                />
+                <TextField
+                  type="text"
+                  variant="outlined"
+                  margin="normal"
+                  required
+                  fullWidth
+                  id="jobLocation"
+                  label="Work Address"
+                  name="jobLcoation"
+                  autoComplete="Work Address"
+                  onChange={(e) => setJobLocation(e.target.value)}
                   autoFocus
                 />
 
                 <Button
-                  // onClick={registerHandler}
+                  onClick={addPersonHandler}
                   variant="contained"
                   color="primary"
                   className={classes.submit}
                 >
-                  Sign up
+                  SAVE
                 </Button>
               </form>
             </div>
@@ -228,5 +270,177 @@ export default function Person() {
     </div>
   );
 
-  return <div>{addPerson}</div>;
+  const viewPerson = (
+    <div>
+      <div style={{ alignItems: "center", justifyContent: "center" }}>
+        { } <Button
+          onClick={() => setCurrentWindow("menu")}
+          type="submit"
+          style={{ minWidth: "5%" }}
+          variant="contained"
+          color="green"
+          className={classes.submit}
+        >
+          Back
+        </Button>
+        <br />
+        <br />
+      </div>
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          height: "100%",
+        }}
+      >
+        <Grid component="main" className={classes.root}>
+          <CssBaseline />
+
+          <Grid>
+            <div>
+              <form className={classes.form} noValidate>
+                <Typography component="h1" variant="h5">
+                  View Details
+                </Typography>
+                <TextField
+                  type="text"
+                  variant="outlined"
+                  margin="normal"
+                  required
+                  fullWidth
+                  id="ID"
+                  label="NIC"
+                  name="NIC"
+                  autoComplete="National Identity Number"
+                  autoFocus
+                  onChange={(e) => setFindNic(e.target.value)}
+                />
+                <Button
+                  onClick={getPersonDetailHandler}
+                  variant="contained"
+                  color="primary"
+                  className={classes.submit}
+                >
+                  View
+                </Button>
+              </form>
+            </div>
+            <Grid className={classes.paper}>
+            <GridContainer>
+              <GridItem xs={12} sm={12} md={8}>
+                    <GridContainer>
+                      <GridItem xs={12} sm={12} md={6}>
+                        {/* fetch() */}
+                        <CustomInput
+                          labelText="NIC"
+                          disabled
+                          id="nic"
+                          value={personDetail == {} ? "" : personDetail.nic}
+                          formControlProps={{
+                            fullWidth: true,focused:true
+                          }}
+                        />
+                      </GridItem>
+                      <GridItem xs={12} sm={12} md={6}>
+                        {/* fetch() */}
+                        <CustomInput
+                          labelText="Full Name"
+                          id="name"
+                          value={personDetail == {} ? "" : personDetail.name}
+                          formControlProps={{
+                            fullWidth: true,focused:true
+                          }}
+                        />
+                      </GridItem>
+                    </GridContainer>
+                    <GridContainer>
+                      <GridItem xs={12} sm={12} md={6}>
+                        {/* fetch() */}
+                        <CustomInput
+                          labelText="Address"
+                          id="address"
+                          value={personDetail == {} ? "" : personDetail.address}
+                          formControlProps={{
+                            fullWidth: true,focused:true
+                          }}
+                        />
+                      </GridItem>
+                      <GridItem xs={12} sm={12} md={6}>
+                        {/* fetch() */}
+                        <CustomInput
+                          labelText="Family ID"
+                          id="familyId"
+                          value={personDetail == {} ? "" : personDetail.familyId}
+                          formControlProps={{
+                            fullWidth: true,focused:true
+                          }}
+                        />
+                      </GridItem>
+                    </GridContainer>
+                    <GridContainer>
+                      <GridItem xs={12} sm={12} md={6}>
+                        {/* fetch() */}
+                        <CustomInput
+                          labelText="Date of Birth"
+                          id="dateOfBirth"
+                          value={personDetail == {} ? "" : personDetail.dateOfBirth}
+                          formControlProps={{
+                            fullWidth: true,focused:true
+                          }}
+                        />
+                      </GridItem>
+                      {/* fetch() */}
+
+                    </GridContainer>
+                    <GridContainer>
+                      <GridItem xs={12} sm={12} md={4}>
+                        {/* fetch() */}
+                        <CustomInput
+                          labelText="Job"
+                          id="job"
+                          value={personDetail == {} ? "" : personDetail.job}
+                          formControlProps={{
+                            fullWidth: true,focused:true
+                          }}
+                        />
+                      </GridItem>
+                      {/* fetch() */}
+
+              
+                      <GridItem xs={15} sm={12} md={5}>
+                        {/* fetch() */}
+                        <CustomInput
+                          labelText="Work Address"
+                          fullWidth
+                          id="jobLocation"
+                          value={personDetail == {} ? "" : personDetail.jobLocation}
+                          formControlProps={{
+                            fullWidth: true,focused:true
+                          }}
+                        />
+                      </GridItem>
+                      {/* fetch() */}
+
+                    </GridContainer>
+              </GridItem>
+            </GridContainer>
+          </Grid>
+          </Grid>
+          
+        </Grid>
+      </div>
+    </div>
+  );
+
+  const viewP = (
+    <div>
+
+    </div>
+  );
+  return (
+    <div>
+      {currentWindow === "menu" ? (<div>{menu}</div>) : (currentWindow == "addPerson" ? (<div>{addPerson}</div>) : (<div>{viewPerson}</div>))}
+    </div>
+  );
 }
