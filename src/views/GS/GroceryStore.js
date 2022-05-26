@@ -1,351 +1,429 @@
 import React from "react";
-// @material-ui/core components
 import { makeStyles } from "@material-ui/core/styles";
-// core components
+import { Grid } from "@material-ui/core";
+import { CssBaseline } from "@material-ui/core";
+import "react-responsive-modal/styles.css";
+import Button from "@material-ui/core/Button";
+import TextField from "@material-ui/core/TextField";
+import { useEffect, useState } from "react";
+import { Container } from "@material-ui/core";
+import Stack from "@mui/material/Stack";
+import { Typography } from "@material-ui/core";
+import axios from "axios";
+import useToken from "useToken";
+import { Label } from "@material-ui/icons";
 import GridItem from "components/Grid/GridItem.js";
 import GridContainer from "components/Grid/GridContainer.js";
-import Table from "components/Table/Table.js";
+import CustomInput from "components/CustomInput/CustomInput.js";
 import Card from "components/Card/Card.js";
 import CardHeader from "components/Card/CardHeader.js";
+import CardAvatar from "components/Card/CardAvatar.js";
 import CardBody from "components/Card/CardBody.js";
-import "react-responsive-modal/styles.css";
-import { Modal } from "react-responsive-modal";
-import Button from '@material-ui/core/Button';
-import IconButton from '@material-ui/core/IconButton';
-import DeleteIcon from '@material-ui/icons/Delete';
-import EditIcon from '@material-ui/icons/Edit';
-import Input from '@material-ui/core/Input';
-import InputLabel from '@material-ui/core/InputLabel';
-import InputAdornment from '@material-ui/core/InputAdornment';
-import FormControl from '@material-ui/core/FormControl';
-import TextField from '@material-ui/core/TextField';
-import Grid from '@material-ui/core/Grid';
-import AccountCircle from '@material-ui/icons/AccountCircle';
-import SaveIcon from '@material-ui/icons/Save';
-import purple from '@material-ui/core/colors/purple';
-import { deepPurple } from "@material-ui/core/colors";
-import { styled, alpha } from '@mui/material/styles';
-import AppBar from '@mui/material/AppBar';
-import Box from '@mui/material/Box';
-import Toolbar from '@mui/material/Toolbar';
-import InputBase from '@mui/material/InputBase';
-import SearchIcon from '@mui/icons-material/Search';
-import { DataGrid } from '@mui/x-data-grid';
-import MenuItem from '@mui/material/MenuItem';
-import Select from '@mui/material/Select';
-import { useState,useEffect } from "react";
-import useToken from "useToken";
+import CardFooter from "components/Card/CardFooter.js";
+import { DataGrid } from "@material-ui/data-grid";
+import { Wrapper, Status } from "@googlemaps/react-wrapper";
+import SimpleMap from "components/Map";
 const useStyles = makeStyles((theme) => ({
   paper: {
-    position: 'relative',
-    width: 200,
-    borderRadius:"5px",
+    position: "relative",
+    width: "100%",
+    borderRadius: "5px",
     // height: "100px",
     backgroundColor: "white",
-    border: '2px solid blue',
+    border: "2px solid blue",
+    // borderLeft: "2px solid blue",
+    // borderBottom: "2px solid blue",
     //boxShadow: theme.shadows[1],
-    padding: theme.spacing(2, 4, 3),
+    padding: theme.spacing(6, 4, 3),
+  },
+  form: {
+    position: "relative",
+    width: "100%",
+    borderRadius: "5px",
+    // height: "100px",
+    backgroundColor: "white",
+    borderTop: "2px solid blue",
+    borderRight: "2px solid blue",
+    borderLeft: "2px solid blue",
+
+    //boxShadow: theme.shadows[1],
+    padding: theme.spacing(3, 4, 3),
+  },
+  table: {
+    // position: "relative",
+    width: "100%",
+    borderRadius: "5px",
+    // height: "100px",
+    backgroundColor: "white",
+    // borderTop: "2px solid blue",
+    // borderRight: "2px solid blue",
+    // borderLeft: "2px solid blue",
+
+    //boxShadow: theme.shadows[1],
+    padding: theme.spacing(3, 4, 3),
   },
 }));
 
-const styles = {
-  // root: {
-  //   '& > *': {
-  //     margin: theme.spacing(1),
-  //   },
-  // },
-  cardCategoryWhite: {
-    "&,& a,& a:hover,& a:focus": {
-      color: "rgba(255,255,255,.62)",
-      margin: "0",
-      fontSize: "14px",
-      marginTop: "0",
-      marginBottom: "0",
-    },
-    "& a,& a:hover,& a:focus": {
-      color: "#FFFFFF",
-    },
-  },
-  cardTitleWhite: {
-    color: "#FFFFFF",
-    marginTop: "0px",
-    minHeight: "auto",
-    fontWeight: "300",
-    fontFamily: "'Roboto', 'Helvetica', 'Arial', sans-serif",
-    marginBottom: "3px",
-    textDecoration: "none",
-    "& small": {
-      color: "#777",
-      fontSize: "65%",
-      fontWeight: "400",
-      lineHeight: "1",
-    },
-  },
-  
-};
-
-// const useStyles = makeStyles(styles);
-
-export default function TableList() {
-  const [open,setOpen]=React.useState(false);
-  
-  const [building, setBuilding] = React.useState('');
-
-  const handleBuilding = (event) => {
-    setBuilding(event.target.value);
-  };
+export default function Vaccination() {
 
   const classes = useStyles();
-  const onOpenModal = () => {
-    setOpen(true);
-  };
 
-  const onCloseModal = () => {
-    setOpen(false);
-  };
-
-  const handleEdit=()=>{
-    window.location.replace("/lecturer/lecturers/edit/1")
+  async function addVaccinationHandler() {
+    axios
+      .post(process.env.REACT_APP_API + "/gs/addVaccinationInfo", {
+        nic,
+        vaccineName,
+        vaccinationAddress,
+        vaccinationDate,
+      }, { headers: { 'Authorization': "Bearer " + token } })
+      .then((response) => {
+        if (response.status === 200) {
+          alert(response.data.message);
+          setCurrentWindow("menu")
+        }
+      })
+      .catch(e => alert("Invalid data"));
   }
 
- 
+  async function getVaccinationDetailHandler() {
+    axios.get(process.env.REACT_APP_API + "/gs/person/" + findNic, { headers: { 'Authorization': "Bearer " + token } }).then((response) => {
+      if (response.status === 200) {
+        setPersonDetail(response.data)
+      }
+      else {
+        alert("Person not found")
+      }
+    }).catch(e => alert(e))
+    axios.get(process.env.REACT_APP_API + "/gs/vaccination/" + findNic, { headers: { 'Authorization': "Bearer " + token } }).then((response) => {
+      if (response.status === 200) {
+        setVaccinationDetail(response.data)
+      }
+      else {
+        alert("Person not found")
+      }
+    }).catch(e => alert(e))
+  }
+  const { token, setToken } = useToken();
+  const [nic, setNic] = useState();
+  const [vaccineName, setVaccineName] = useState();
+  const [vaccinationAddress, setVaccinationAddress] = useState();
+  const [vaccinationDate, setVaccinationDate] = useState();
+  const [findNic, setFindNic] = useState();
+  const [vaccinationDetail, setVaccinationDetail] = useState({});
+  const [personDetail,setPersonDetail]=useState({});
+  const [currentWindow, setCurrentWindow] = useState("menu");
+  console.log(currentWindow)
+  console.log(vaccinationDetail);
+  const menu = (
+    <div>
+      <br /> <br /> <br />
+      <Container maxWidth="sm">
+        <Stack
+          sx={{ pt: 4 }}
+          direction="column"
+          spacing={2}
+          justifyContent="center"
+        >
+          <Button
+            onClick={() => setCurrentWindow("addVaccination")}
+            type="submit"
+            style={{ minWidth: "5%" }}
+            variant="contained"
+            color="primary"
+            className={classes.submit}
+          >Add New Vaccination Detail</Button>
+          <br />
+          <Button
+            onClick={() => setCurrentWindow("viewVaccination")}
+            type="submit"
+            style={{ minWidth: "5%" }}
+            variant="contained"
+            color="primary"
+            className={classes.submit}
+          >View Vaccination Detail</Button>
+        </Stack>
+      </Container>
+    </div>
+  );
 
+  const addVaccination = (
+    <div>
+      <div style={{ alignItems: "center", justifyContent: "center" }}>
+        { } <Button
+          onClick={() => setCurrentWindow("menu")}
+          type="submit"
+          style={{ minWidth: "5%" }}
+          variant="contained"
+          color="green"
+          className={classes.submit}
+        >
+          Back
+        </Button>
+        <br />
+        <br />
+      </div>
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          height: "100%",
+        }}
+      >
+        <Grid component="main" className={classes.root}>
+          <CssBaseline />
 
-  // const [token,setToken]=useToken();
+          <Grid>
+            <div>
+              <form className={classes.form} style={{borderBottom:"2px solid blue"}} noValidate>
+                <Typography component="h1" variant="h5">
+                  Sign Up
+                </Typography>
+                <TextField
+                  type="text"
+                  variant="outlined"
+                  margin="normal"
+                  required
+                  fullWidth
+                  id="ID"
+                  label="NIC"
+                  name="NIC"
+                  autoComplete="National Identity Number"
+                  autoFocus
+                  onChange={(e) => setNic(e.target.value)}
+                />
+                <TextField
+                  type="text"
+                  variant="outlined"
+                  margin="normal"
+                  required
+                  fullWidth
+                  id="vaccineName"
+                  label="Vaccine Name"
+                  name="vaccineName"
+                  autoComplete=""
+                  onChange={(e) => setVaccineName(e.target.value)}
+                  autoFocus
+                />
+                <TextField
+                  type="text"
+                  variant="outlined"
+                  margin="normal"
+                  required
+                  fullWidth
+                  id="vaccinationAddress"
+                  label="Vaccination Address"
+                  name="vaccinationAddress"
+                  autoComplete=""
+                  onChange={(e) => setVaccinationAddress(e.target.value)}
+                  autoFocus
+                />
 
-  // const [token,setToken]=useToken();
-  const [buildings,setBuildings]=useState();
-  const [labId,setLabId]=useState();
-  const [name,setName]=useState();
-  const [floor,setFloor]=useState();
-  const [data,setData]=useState();
-  var rows=[];
-  useEffect(()=>{
-    fetch(process.env.REACT_APP_API+'/admin/viewLab',{credentials:'include'})
-     .then(response => response.json())
-    .then(data=>setData(data.msg))
-    .catch(e=>console.log(e));
-
-
-    fetch(process.env.REACT_APP_API+'/admin/getBuildings',{credentials:'include'})
-     .then(response => response.json())
-    .then(data=>setBuildings(data.msg))
-    .catch(e=>console.log(e));
-
-  },[])
-if (data){
-  for (let i=0;i<data.length;i++){
-    rows[i]={
-    id:i,
-    ID:i+1,
-    LabID:data[i].lab_id,
-    Name:data[i].name,
-    Building:data[i].b_name,
-    Floor:data[i].floor
+                <TextField
+                  type="text"
+                  variant="outlined"
+                  margin="normal"
+                  required
+                  fullWidth
+                  id="vacciantionDate"
+                  label="Vaccination Date"
+                  name="vaccinationDate"
+                  autoComplete=""
+                  onChange={(e) => setVaccinationDate(e.target.value)}
+                  autoFocus
+                />
+                <Button
+                  onClick={addVaccinationHandler}
+                  variant="contained"
+                  color="primary"
+                  className={classes.submit}
+                >
+                  SAVE
+                </Button>
+              </form>
+            </div>
+          </Grid>
+        </Grid>
+      </div>
+    </div>
+  );
+   var rows=[]
+   if (vaccinationDetail){
+    for (let i=0;i<vaccinationDetail.length;i++){
+      rows[i]={
+      id:i,
+      ID:i+1,
+      ID:vaccinationDetail[i].recordId,
+      vaccineName:vaccinationDetail[i].vaccineName,
+      vaccinationAddress:vaccinationDetail[i].vaccinationAddress,
+      vaccinationDate:vaccinationDetail[i].vaccinationDate
+      }
     }
-  }
-}
+  }     
+  const viewVaccination = (
+    <div>
+      <div style={{ alignItems: "center", justifyContent: "center" }}>
+        { } <Button
+          onClick={() => setCurrentWindow("menu")}
+          type="submit"
+          style={{ minWidth: "5%" }}
+          variant="contained"
+          color="green"
+          className={classes.submit}
+        >
+          Back
+        </Button>
+        <br />
+        <br />
+      </div>
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          height: "100%",
+        }}
+      >
+        <Grid component="main" className={classes.root}>
+          <CssBaseline />
 
-const deleteHandler=(labId)=>{
-  console.log("delete Caled")
-  const requestOptions = {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    credentials: 'include',
-    body:JSON.stringify({labId:labId})
-  };
-  fetch(process.env.REACT_APP_API+'/admin/removeLaboratory',requestOptions)
-    .then(response => response.json())
-   .then(data1=>{
-    setData(data.filter(element=>element.lab_id!=labId))
-     alert(data1.message);
-   })
-   .catch(e=>console.log(e));
-}
-  const addLabHandler=async()=>{
-    const requestOptions = {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      credentials: 'include',
-      body: JSON.stringify({labId:labId,name:name,building:building,floor:floor})
-    };
-    // console.log(requestOptions);
-    await fetch(process.env.REACT_APP_API+'/admin/addLaboratory',requestOptions)
-       .then(response => response.json())
-      .then(data=>{
-        if (data.title=="Success"){
-          alert("Lab added successfully")
-        }
-        else{
-          alert("Failed")
-        }
-        onCloseModal();
-      }).catch(e=>alert("Failed"));
-  }
+          <Grid>
+            <div>
+              <form className={classes.form} noValidate>
+                <Typography component="h1" variant="h5">
+                  Sign Up
+                </Typography>
+                <TextField
+                  type="text"
+                  variant="outlined"
+                  margin="normal"
+                  required
+                  fullWidth
+                  id="ID"
+                  label="NIC"
+                  name="NIC"
+                  autoComplete="National Identity Number"
+                  autoFocus
+                  onChange={(e) => setFindNic(e.target.value)}
+                />
+                <Button
+                  onClick={getVaccinationDetailHandler}
+                  variant="contained"
+                  color="primary"
+                  className={classes.submit}
+                >
+                  View
+                </Button>
+              </form>
+            </div>
+            <Grid className={classes.paper}>
+              <GridContainer>
+                <GridItem xs={12} sm={12} md={8}>
+                  <GridContainer>
+                    <GridItem xs={12} sm={12} md={6}>
+                      {/* fetch() */}
+                      <CustomInput
+                        labelText="NIC"
+                        disabled
+                        id="nic"
+                        value={personDetail == {} ? "" : personDetail.nic}
+                        formControlProps={{
+                          fullWidth: true, focused: true
+                        }}
+                      />
+                    </GridItem>
+                  </GridContainer>
+                  <GridContainer>
+                    <GridItem xs={12} sm={12} md={6}>
+                      {/* fetch() */}
+                      <CustomInput
+                        labelText="Full Name"
+                        id="name"
+                        value={personDetail == {} ? "" : personDetail.name}
+                        formControlProps={{
+                          fullWidth: true, focused: true
+                        }}
+                      />
+                    </GridItem>
+                  </GridContainer>
+                  <GridContainer>
+                    <GridItem xs={12} sm={12} md={6}>
+                      {/* fetch() */}
+                      <CustomInput
+                        labelText="Address"
+                        id="address"
+                        value={personDetail == {} ? "" : personDetail.address}
+                        formControlProps={{
+                          fullWidth: true, focused: true
+                        }}
+                      />
+                    </GridItem>
+                  </GridContainer>
+                </GridItem>
+              </GridContainer>
+            </Grid>
+          </Grid>
+        </Grid>
+        <Grid className={classes.table}>
+            <GridContainer>
+              <GridItem xs={12} sm={12} md={12}>
+                <Card>
+                  <CardHeader color="primary">
+                    <h4 className={classes.cardTitleWhite}>Laboratory Table</h4>
 
-  console.log(data);
-  const columns = [
-    
-    {
-        field: 'ID',
-        headerName: 'ID',
-        flex: 0.5,
-        minwidth:100,
-        
-      },
-      {
-        field: 'LabID',
-        headerName: 'Lab ID',
-         flex: 0.5,
-        minWidth: 100,
-      },
-      {
-        field: 'Name',
-        headerName: 'Name',
-         flex: 0.5,
-        minWidth: 100,
-      },
-      {
-        field: 'Building',
-        headerName: 'Building',
-         flex: 0.5,
-        minWidth: 130,
-      },
-      {
-        field: 'Floor',
-        headerName: 'Floor',
-         flex: 0.3,
-        minWidth: 100,
-      },
-  {
-    //edit and delete button need to be implemented
-    field: 'action',
-    headerName: 'Action',
-    minwidth:150,
-    flex:0.8,
-    renderCell: (params) => (
-      <strong>
-        
-        {/* <IconButton onClick={editHandler} aria-label="edit" >
-          <EditIcon fontSize="inherit" />
-        </IconButton> */}
-        <IconButton onClick={()=>{deleteHandler(params.row.LabID)}} aria-label="delete" >
-          <DeleteIcon fontSize="inherit" />
-        </IconButton>
-        
-        
-      </strong>
-    ),
-  }
-];
+                  </CardHeader>
+                  <CardBody>
+                    <div style={{ height: 450, width: '100%' }}>
+                      <DataGrid rows={rows} columns={columns} />
+                    </div>
+                  </CardBody>
+                </Card>
+              </GridItem>
+
+            </GridContainer>
+          </Grid>
+      </div>
+    </div>
+  );
   
+  
+  const viewP = (
+    <div>
+      <SimpleMap></SimpleMap>
+    </div>
+  );
   return (
     <div>
-    
-   
-      <Modal  open={open} onClose={onCloseModal}  aria-labelledby="simple-modal-title">  
-    <div className={classes.paper}>
-        {/* <body backgroundColor={deepPurple}>
-        <h2 id="simple-modal-title">Add Laboratory</h2>
-        </body> */}
-        <h2 style={{color:"blue"}}>Add Laboratory</h2>
-      
-      <div>
-         
-       
-      <Box
-      component="form"
-      sx={{
-        '& .MuiTextField-root': { m: 0.5, width: '25ch' },
-      }}
-      noValidate
-      autoComplete="off"
-    >
-      
-     {/* need to be validated */}
-      <div>
-
-
-        <TextField id="standard-error" onChange={e=>setLabId(e.target.value)} label="Lab ID" variant="standard"/>
-        <TextField id="standard-error" onChange={e=>setName(e.target.value)} label="Name" variant="standard"/>
-
-        <TextField id="standard-error" onChange={e=>setFloor(e.target.value)} label="Floor" variant="standard"/>
-
-
-          
-          <div style={{padding:"10px 0px"}}>
-        <FormControl variant="standard" sx={{ m: 1, minWidth: 500 }}>
-        <InputLabel id="demo-simple-select-standard-label">Building</InputLabel>
-        <Select
-         style={{width: `${220}px`}} 
-          labelId="demo-simple-select-standard-label"
-          id="demo-simple-select-standard"
-          value={building}
-          onChange={handleBuilding}
-          label="hib"
-        >
-          <MenuItem value="">
-            <em>None</em>
-          </MenuItem>
-
-          {buildings && buildings.map((b)=><MenuItem key={b.b_id} value={b.b_id}>{b.b_name}</MenuItem>)}
-        </Select>
-      </FormControl>
-      </div>
-      
-    
-      </div>
-
-    </Box>
-    {/* submit button inside modal need to be implemented */}
-
-   
-          <div style={{padding:"10px"}}>
-
-   
-          <div style={{padding:"10px"}}>
-        <Button variant="contained"  color="light blue" onClick={addLabHandler} size="small" className={classes.button} startIcon={<SaveIcon />}>
-
-        Submit
-      </Button>
-      </div>
-          </div>
-      {/* <SimpleModal /> */}
-    </div>
-  
-          {/* <h2>Add Lecturer</h2> */}
-         </div>
-        </Modal>
-
-    <GridContainer>
-      <GridItem xs={12} sm={12} md={12}>
-        <Card>
-          <CardHeader color="primary">
-            <h4 className={classes.cardTitleWhite}>Laboratory Table</h4>
-          
-          </CardHeader>
-          <CardBody>
-          <div style={{ height: 450, width: '100%' }}>
-                         <DataGrid rows={rows} columns={columns} />
-                    </div>
-          </CardBody>
-        </Card>
-      </GridItem>
-     
-    </GridContainer>
-    <div className={classes.root}>
-    <Button onClick={onOpenModal}  variant="contained" color="secondary">
-        Add Laboratory
-      </Button>
-      </div>
-      
+      {currentWindow === "menu" ? (<div>{viewP}</div>) : (currentWindow == "addVaccination" ? (<div>{addVaccination}</div>) : (<div>{viewVaccination}</div>))}
     </div>
   );
 }
 
+const columns = [
 
+  {
+    field: 'ID',
+    headerName: 'ID',
+    flex: 0.5,
+    minwidth: 100,
 
-
-
-
-
+  },
+  {
+    field: 'vaccineName',
+    headerName: 'Vaccination Name',
+    flex: 0.5,
+    minWidth: 100,
+  },
+  {
+    field: 'vaccinationAddress',
+    headerName: 'Vaccination Address',
+    flex: 0.5,
+    minWidth: 100,
+  },
+  {
+    field: 'vaccinationDate',
+    headerName: 'Vaacination Date',
+    flex: 0.5,
+    minWidth: 130,
+  }
+]
