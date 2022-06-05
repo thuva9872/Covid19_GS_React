@@ -5,15 +5,16 @@ import Vaccination from "views/GS/VaccinationDetail";
 import CovidStatus from "views/GS/CovidStatus";
 import GroceryStore from "views/GS/GroceryStore";
 import {GroupAdd} from '@material-ui/icons';
-
+import DashboardPage from "views/GS/Dashboard";
+import Dashboard from "@material-ui/icons/Dashboard";
 const dashboardRoutes = [
-  // {
-  //   path: "/dashboard",
-  //   name: "Dashboard",
-  //   icon: Dashboard,
-  //   component: DashboardPage,
-  //   layout: "/gs",
-  // },
+  {
+    path: "/dashboard",
+    name: "Dashboard",
+    icon: Dashboard,
+    component: DashboardPage,
+    layout: "/gs",
+  },
   {
     path: "/person",
     name: "Person",

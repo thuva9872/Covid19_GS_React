@@ -150,7 +150,7 @@ export default function GroceryStore() {
   const AddGroceryMap = (
     <div>
       <LoadScript
-        googleMapsApiKey="AIzaSyBJmxPJ8Ig1CMJ-99jn8LtijRgtQ_o8AXo"
+        googleMapsApiKey={process.env.REACT_APP_API_KEY}
       >
         <GoogleMap
           mapContainerStyle={containerStyle}
@@ -279,7 +279,7 @@ export default function GroceryStore() {
   const ViewGroceryMap = (
     <div>
       <LoadScript
-        googleMapsApiKey="AIzaSyBJmxPJ8Ig1CMJ-99jn8LtijRgtQ_o8AXo"
+        googleMapsApiKey={process.env.REACT_APP_API_KEY}
       >
         <GoogleMap
           mapContainerStyle={{ width: "1000px", height: "1000px" }}
