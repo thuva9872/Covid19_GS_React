@@ -368,7 +368,7 @@ export default function Vaccination() {
               <GridItem xs={12} sm={12} md={12}>
                 <Card>
                   <CardHeader color="primary">
-                    <h4 className={classes.cardTitleWhite}>Laboratory Table</h4>
+                    <h4 className={classes.cardTitleWhite}>Vaccination Table</h4>
 
                   </CardHeader>
                   <CardBody>

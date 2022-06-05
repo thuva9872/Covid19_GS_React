@@ -1,12 +1,10 @@
-import Dashboard from "@material-ui/icons/Dashboard";
 import Person from "@material-ui/icons/Person";
-import DashboardPage from "views/GS/Dashboard";
 import Pharmacy from "views/GS/Pharmacy";
-import Grocery from "views/GS/GroceryStore";
 import Persons from "views/GS/Person";
 import Vaccination from "views/GS/VaccinationDetail";
 import CovidStatus from "views/GS/CovidStatus";
-import {Domain,GroupAdd} from '@material-ui/icons';
+import GroceryStore from "views/GS/GroceryStore";
+import {GroupAdd} from '@material-ui/icons';
 
 const dashboardRoutes = [
   // {
@@ -44,13 +42,13 @@ const dashboardRoutes = [
     component: Pharmacy,
     layout: "/gs",
   },
-  // {
-  //   path: "/grocery",
-  //   name: "Grocery Store",
-  //   icon: Domain,
-  //   component: Grocery,
-  //   layout: "/gs",
-  // }
+  {
+    path: "/grocery",
+    name: "Grocery Store",
+    icon: GroupAdd,
+    component: GroceryStore,
+    layout: "/gs",
+  }
 ];
 
 export default dashboardRoutes;
