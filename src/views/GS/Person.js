@@ -5,21 +5,15 @@ import { CssBaseline } from "@material-ui/core";
 import "react-responsive-modal/styles.css";
 import Button from "@material-ui/core/Button";
 import TextField from "@material-ui/core/TextField";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Container } from "@material-ui/core";
 import Stack from "@mui/material/Stack";
 import { Typography } from "@material-ui/core";
 import axios from "axios";
 import useToken from "useToken";
-import { Label } from "@material-ui/icons";
 import GridItem from "components/Grid/GridItem.js";
 import GridContainer from "components/Grid/GridContainer.js";
 import CustomInput from "components/CustomInput/CustomInput.js";
-import Card from "components/Card/Card.js";
-import CardHeader from "components/Card/CardHeader.js";
-import CardAvatar from "components/Card/CardAvatar.js";
-import CardBody from "components/Card/CardBody.js";
-import CardFooter from "components/Card/CardFooter.js";
 const useStyles = makeStyles((theme) => ({
   paper: {
     position: "relative",
@@ -73,14 +67,22 @@ export default function Person() {
   }
 
   async function getPersonDetailHandler() {
-    axios.get(process.env.REACT_APP_API + "/gs/person/" + findNic, { headers: { 'Authorization': "Bearer " + token } }).then((response) => {
-      if (response.status === 200) {
-        setPersonDetail(response.data)
-      }
-      else {
-        alert("Person not found")
-      }
-    }).catch(e => alert(e))
+    axios
+      .get(process.env.REACT_APP_API + "/gs/person/" + findNic, {
+        headers: { Authorization: "Bearer " + token },
+      })
+      .then((response) => {
+        if (response.status === 200) {
+          setPersonDetail(response.data);
+        } else {
+          alert("Person not found");
+          setPersonDetail({})
+        }
+      })
+      .catch((e) => {
+        alert("Person not Found!!!");
+        setPersonDetail({});
+      });
   }
   const { token, setToken } = useToken();
   const [nic, setNic] = useState();

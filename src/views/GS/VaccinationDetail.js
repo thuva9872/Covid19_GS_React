@@ -319,7 +319,7 @@ export default function Vaccination() {
               <GridContainer>
                 <GridItem xs={12} sm={12} md={8}>
                   <GridContainer>
-                    <GridItem xs={12} sm={12} md={6}>
+                    <GridItem >
                       {/* fetch() */}
                       <CustomInput
                         labelText="NIC"
@@ -333,7 +333,7 @@ export default function Vaccination() {
                     </GridItem>
                   </GridContainer>
                   <GridContainer>
-                    <GridItem xs={12} sm={12} md={6}>
+                    <GridItem >
                       {/* fetch() */}
                       <CustomInput
                         labelText="Full Name"
@@ -346,7 +346,7 @@ export default function Vaccination() {
                     </GridItem>
                   </GridContainer>
                   <GridContainer>
-                    <GridItem xs={12} sm={12} md={6}>
+                    <GridItem >
                       {/* fetch() */}
                       <CustomInput
                         labelText="Address"

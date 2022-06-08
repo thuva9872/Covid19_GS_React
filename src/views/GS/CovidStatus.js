@@ -5,21 +5,18 @@ import { CssBaseline } from "@material-ui/core";
 import "react-responsive-modal/styles.css";
 import Button from "@material-ui/core/Button";
 import TextField from "@material-ui/core/TextField";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Container } from "@material-ui/core";
 import Stack from "@mui/material/Stack";
 import { Typography } from "@material-ui/core";
 import axios from "axios";
 import useToken from "useToken";
-import { Label } from "@material-ui/icons";
 import GridItem from "components/Grid/GridItem.js";
 import GridContainer from "components/Grid/GridContainer.js";
 import CustomInput from "components/CustomInput/CustomInput.js";
 import Card from "components/Card/Card.js";
 import CardHeader from "components/Card/CardHeader.js";
-import CardAvatar from "components/Card/CardAvatar.js";
 import CardBody from "components/Card/CardBody.js";
-import CardFooter from "components/Card/CardFooter.js";
 import { DataGrid } from "@material-ui/data-grid";
 
 const useStyles = makeStyles((theme) => ({
@@ -92,7 +89,7 @@ export default function CovidStatus() {
       else {
         alert("Person not found")
       }
-    }).catch(e => alert(e))
+    }).catch(e => alert("No details found"))
     axios.get(process.env.REACT_APP_API + "/gs/covid19/" + findNic, { headers: { 'Authorization': "Bearer " + token } }).then((response) => {
       if (response.status === 200) {
         setCovidDetail(response.data)
@@ -100,7 +97,7 @@ export default function CovidStatus() {
       else {
         alert("Person not found")
       }
-    }).catch(e => alert(e))
+    }).catch(e => alert("No details found"))
   }
   const { token, setToken } = useToken();
   const [nic, setNic] = useState();
@@ -319,7 +316,7 @@ export default function CovidStatus() {
               <GridContainer>
                 <GridItem xs={12} sm={12} md={8}>
                   <GridContainer>
-                    <GridItem xs={12} sm={12} md={6}>
+                    <GridItem >
                       {/* fetch() */}
                       <CustomInput
                         labelText="NIC"
@@ -327,13 +324,13 @@ export default function CovidStatus() {
                         id="nic"
                         value={personDetail == {} ? "" : personDetail.nic}
                         formControlProps={{
-                          fullWidth: true, focused: true
+                          focused: true
                         }}
                       />
                     </GridItem>
                   </GridContainer>
                   <GridContainer>
-                    <GridItem xs={12} sm={12} md={6}>
+                    <GridItem >
                       {/* fetch() */}
                       <CustomInput
                         labelText="Full Name"
@@ -346,7 +343,7 @@ export default function CovidStatus() {
                     </GridItem>
                   </GridContainer>
                   <GridContainer>
-                    <GridItem xs={12} sm={12} md={6}>
+                    <GridItem >
                       {/* fetch() */}
                       <CustomInput
                         labelText="Address"

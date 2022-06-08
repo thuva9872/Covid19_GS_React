@@ -13,10 +13,6 @@ import axios from "axios";
 import useToken from "useToken";
 import { GoogleMap, LoadScript } from '@react-google-maps/api';
 import { Marker } from '@react-google-maps/api';
-import { Modal } from "@material-ui/core";
-import GridContainer from "components/Grid/GridContainer";
-import GridItem from "components/Grid/GridItem";
-import CustomInput from "components/CustomInput/CustomInput";
 const useStyles = makeStyles((theme) => ({
   paper: {
     position: "relative",
@@ -288,11 +284,11 @@ export default function Pharmacy() {
           onLoad={getPharmacyHandler}
         >
           {pharmacies && pharmacies.map(element => {
-            let loc = element.location.split(",");
+            if(element.location!=null){let loc = element.location.split(",");
             // console.log(loc);
             let pos = { lat: parseFloat(loc[0].slice(1)), lng: parseFloat(loc[1].slice(0, -1)) }
             // console.log(pos);
-            return <Marker id={element.id} position={pos} />
+            return <Marker id={element.id} position={pos} />}
           })}
         </GoogleMap>
       </LoadScript>
